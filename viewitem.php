@@ -4,6 +4,16 @@ if(!isset($_SESSION))
 {
     session_start();
 }
+
+try {
+    $sql = "select * from category";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute();
+    $categories = $stmt->fetchAll();
+} catch (PDOException $e) {
+    echo $e->getMessage();
+}
+
 try {
     $sql = "select i.item_id, i.iname,
 		i.price, i.description,
@@ -21,6 +31,57 @@ try {
 }
 
 
+if(isset($_GET['cate'])) 
+{
+        $cid = $_GET['cateChoose'];
+        try {
+            $sql = "SELECT i.item_id, i.iname, i.price, i.description, i.quantity, i.img_path, c.cname as category
+                    FROM item i, category c
+                    WHERE i.category = c.cid AND c.cid = ?";
+
+            $stmt = $conn->prepare($sql);
+            $stmt->execute([$cid]);
+            $items = $stmt->fetchAll();
+        }catch(PDOException $e) {
+            echo $e->getMessage();
+        }
+}
+
+
+if(isset($_GET['priceRadio']))
+{
+    $range = $_GET['priceRange'];
+    $sql = "select i.item_id, i.iname,
+		i.price, i.description,
+        i.quantity, i.img_path,
+        c.cname as category
+        from item i, category c 
+        where i.category = c.cid 
+        and i.price between ? and ?";
+        
+    $lower = 0;
+    $upper = 0;
+    if($range == 0)
+    {
+        $lower = 1;
+        $upper = 100;
+    }
+    else if ($range == 1)
+    {
+        $lower = 101;
+        $upper = 200;
+    }else if ($range == 2)
+    {
+        $lower = 201;
+        $upper = 300;
+
+    }
+
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([$lower, $upper]);
+    $items = $stmt->fetchAll();
+
+}
 
 ?>
 <!DOCTYPE html>
@@ -43,7 +104,54 @@ try {
     </div>
     <div class="container-fluid">
         <div class="row">
-            
+            <div class="col-md-2 py-5">
+                <form action="viewitem.php" method="get" class="form border border-primary border-1 rounded">
+                <select name="cateChoose" class="form-select">
+                    <option>Choose Category</option>
+                    <?php
+                    if(isset($categories))
+                    {
+                        foreach($categories as $category)
+                        {
+                            echo "<option value=$category[cid]>  $category[cname] </option>";
+                        }
+
+                    }
+                    ?>
+
+                </select>
+                <button class="mt-3 btn btn-sm btn-outline-primary rounded-pill" name="cate" type="submit">Submit</button>
+                </form>
+
+                <form action="viewitem.php" method="get" class="mt-5 form border border-primary border-1 rounded">
+                    <fieldset> 
+                        <legend> <h6>Choose Price Range</h6></legend>
+
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="priceRange" value="0">
+                        <label class="form-check-label" for="priceRange">
+                            $1-$100
+                        </label>
+                        <br>
+
+                        <input class="form-check-input" type="radio" name="priceRange" value="1">
+                        <label class="form-check-label" for="priceRange">
+                            $101-$200
+                        </label>
+                        <br>
+
+                        <input class="form-check-input" type="radio" name="priceRange" value="2">
+                        <label class="form-check-label" for="priceRange">
+                            $201-$300
+                        </label>
+                    </div>
+                    <button class="mt-3 btn btn-sm btn-outline-primary rounded-pill" name="priceRadio" type="submit">Submit</button>
+
+                    </fieldset>
+                </form>
+
+            </div>
+
             <div class="col-md-10 mx-auto py-5">
                 <?php 
               if (isset($_SESSION['insertSuccess']))
