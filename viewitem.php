@@ -152,7 +152,9 @@ if(isset($_GET['priceRadio']))
 
             </div>
 
-            <div class="col-md-10 mx-auto py-5">
+            <div class="col-md-10 mx-auto py-5 mb-2">
+                <div class="py-2"> <a class="btn btn-primary mb-2" href="insertitem.php"> Add New Item </a>  </div>
+
                 <?php 
               if (isset($_SESSION['insertSuccess']))
               {
