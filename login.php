@@ -1,9 +1,9 @@
 <?php
 require_once "dbconn.php";
-if(isset($_SESSION)) 
-{
+if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
+
 
 //checking whether login button is clicked
 if(isset($_POST['adminLogin']))

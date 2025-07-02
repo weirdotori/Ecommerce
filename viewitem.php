@@ -82,8 +82,25 @@ if(isset($_GET['priceRadio']))
     $items = $stmt->fetchAll();
 
 }
+if(isset($_GET['bSearch']))
+{
+    $keyword = $_GET['wSearch'];
+    try{
+        $sql = "SELECT * from item where iname like ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute(["%".$keyword."%"]);
+        $items = $stmt->fetchAll();
+    }catch(PDOException $e) 
+    {
+        echo $e->getMessage();
+    }
+
+
+}
 
 ?>
+
+<?php if(isset($_SESSION['adminId']) && isset($_SESSION['login'])) { ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -211,3 +228,4 @@ if(isset($_GET['priceRadio']))
 </body>
 
 </html>
+<?php } else{header("Location:login.php");} ?>

@@ -9,9 +9,13 @@
           <a class="nav-link active" aria-current="page" href="#">Home</a>
           <a class="nav-link" href="#">Features</a>
           <a class="nav-link" href="#">Pricing</a>
-        <?php if(isset($_SESSION['adminId'])&& !isset($_SESSION['login'])) {?>
+        <?php if(!isset($_SESSION['adminId'])&& !isset($_SESSION['login'])) {?>
           <a class="nav-link" href="login.php">Login</a>
         <?php } else { ?>
+          <form class="d-flex" role="search" method="get" action="viewitem.php">
+            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="wSearch"/>
+            <button class="btn btn-outline-success" type="submit" name="bSearch">Search</button>
+          </form>
           <a class="nav-link" href="logout.php">Logout</a>
         <?php } ?>
       </div>
